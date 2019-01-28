@@ -3,7 +3,7 @@ Micro-Grids
 
 ### Description
 
-The Micro-Grid library main objective is to provide an open source alternative to the problem of sizing and dispatch of energy in micro-grids in isolated places. It’s written in python(pyomo) and use excel and text files as input and output data handling and visualization.
+The Micro-Grid library main objective is to provide an open source alternative to the problem of sizing and dispatch of energy in micro-grids in isolated places. It’s written in python(pyomo) and use excel and text files as input and output data handling and visualization. This Branch was created to contain the data for the  13th IEEE PowerTech 2019 paper "Two-stage stochastic sizing of a rural micro-grid based on stochastic load generation". 
 
 Main features:
 
@@ -15,13 +15,22 @@ Main features:
 
 ### Main developpers
 
-Sergio Balderrana
-University of Liege, Belgium - Universidad Mayor de San Simon, Bolivia
-E-mail: slbalderrama@doct.ulg.ac.be
 
-Sylvain Quoilin
-University of Liege, Belgium.
-E-mail: squoilin@ulg.ac.be 
+Francesco Lombardi <br/>
+Politecnico di Milano, Milan <br/>
+E-mail: francesco.lombardi@polimi.it<br/>
+
+Sergio Balderrana <br/>
+University of Liege, Belgium - Universidad Mayor de San Simon, Bolivia <br/>
+E-mail: slbalderrama@doct.ulg.ac.be <br/>
+ 
+Nicolò Stevanato <br/>
+Politecnico di Milano, Milan <br/>
+E-mail: nicolo.stevanato@polimi.it <br/>
+
+Sylvain Quoilin <br/>
+University of Liege, Belgium. <br/>
+E-mail: squoilin@ulg.ac.be <br/>
  
 ### Required libraries
 
