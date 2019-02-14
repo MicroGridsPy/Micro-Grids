@@ -99,12 +99,3 @@ elif formulation =='Dispatch':
     Energy_Mix_Dispatch(instance,Time_Series)
 
 
-#index = pd.DatetimeIndex(start='2017-01-01 00:00:00', periods=len(Time_Series), 
-#                                   freq=('H'))
-##Start_Date = '2017-01-01 00:00:00'
-#end_Date = '2017-06-30 00:00:00'
-#Time_Series.index = index
-#cost = Time_Series['Total Cost Generator'][Start_Date:end_Date].sum()
-#curtailment = Time_Series['Curtailment'][Start_Date:end_Date].sum()/1000000
-#print(cost)
-#print(curtailment)    

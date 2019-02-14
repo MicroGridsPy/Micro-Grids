@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
+import pandas as pd
 
 def Model_Creation(model, Renewable_Penetration,Battery_Independency):
     
@@ -371,7 +371,16 @@ def Model_Creation_Integer(model,Renewable_Penetration, Battery_Independency):
         if g == 1:
             return (0,2)
         else:
-            return (0,1)    
+            return (0,1)
+    
+    Gen_integers =  pd.read_excel('Example/Generator_time_series.xls')     
+    def warmstart_gen_integer(model,s,g,t):
+        if g == 1:
+            column = 'Integer Generator ' + str(s) + ' ' + str(g)
+            return  int(Gen_integers[column][t-1])
+        else:
+            return 0
+        
      # Variables associated to the diesel generator
     
     model.Energy_Generator_Total = Var(model.scenario,model.generator_type,
@@ -387,7 +396,7 @@ def Model_Creation_Integer(model,Renewable_Penetration, Battery_Independency):
                                               within=NonNegativeReals)   
     model.Generator_Energy_Integer = Var(model.scenario, model.generator_type,
                                          model.periods, within=NonNegativeIntegers,
-                                         bounds=bounds_E)
+                                         bounds=bounds_E, initialize=warmstart_gen_integer)
     model.Last_Energy_Generator = Var(model.scenario, model.generator_type,
                                       model.periods, within=NonNegativeReals)
     
