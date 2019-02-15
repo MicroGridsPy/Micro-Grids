@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pyomo.opt import SolverFactory
+
 from pyomo.environ import Objective, minimize, Constraint
 
 
@@ -60,9 +60,7 @@ def Model_Resolution(model,Renewable_Penetration, Battery_Independency,datapath=
 
     
     instance = model.create_instance(datapath) # load parameters       
-    opt = SolverFactory('cplex') # Solver use during the optimization    
-    results = opt.solve(instance, tee=True) # Solving a model instance 
-    instance.solutions.load_from(results)  # Loading solution into instance
+
     return instance
     
     

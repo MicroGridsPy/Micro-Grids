@@ -71,8 +71,8 @@ def Model_Creation(model, Renewable_Penetration,Battery_Independency):
                                             initialize=Marginal_Cost_Generator_1)
         
     # Parameters of the Energy balance                  
-    model.Energy_Demand = Param(model.scenario, model.periods, 
-                                initialize=Initialize_Demand) # Energy Energy_Demand in W 
+#    model.Energy_Demand = Param(model.scenario, model.periods, initialize=Initialize_Demand)
+    model.Energy_Demand = Param(model.scenario, model.periods, mutable=True) 
     model.Lost_Load_Probability = Param(within=NonNegativeReals) # Lost load probability in %
     model.Value_Of_Lost_Load = Param(within=NonNegativeReals) # Value of lost load in USD/W
     if Renewable_Penetration > 0:
