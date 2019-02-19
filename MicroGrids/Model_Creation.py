@@ -41,8 +41,7 @@ def Model_Creation(model, Renewable_Penetration,Battery_Independency):
     model.Renewable_Invesment_Cost = Param(model.renewable_source,
                                            within=NonNegativeReals) # Cost of solar panel in USD/W
     model.Renewable_Energy_Production = Param(model.scenario,model.renewable_source,
-                                              model.periods, within=NonNegativeReals, 
-                                              initialize=Initialize_Renewable_Energy) # Energy produccion of a solar panel in W
+                                              model.periods, within=NonNegativeReals, mutable=True) # Energy produccion of a solar panel in W
     
     # Parameters of the battery bank
     model.Charge_Battery_Efficiency = Param() # Efficiency of the charge of the battery in  %
@@ -63,17 +62,15 @@ def Model_Creation(model, Renewable_Penetration,Battery_Independency):
     # Parametes of the diesel generator
     model.Generator_Efficiency = Param(model.generator_type) # Generator efficiency to trasform heat into electricity %
     model.Low_Heating_Value = Param(model.generator_type) # Low heating value of the diesel in W/L
-    model.Fuel_Cost = Param(model.generator_type,
-                                      within=NonNegativeReals) # Cost of diesel in USD/L
+#    model.Fuel_Cost = Param(model.generator_type, within=NonNegativeReals, mutable=True) 
     model.Generator_Invesment_Cost = Param(model.generator_type,
                                            within=NonNegativeReals) # Cost of the diesel generator
-    model.Marginal_Cost_Generator_1 = Param(model.generator_type,
-                                            initialize=Marginal_Cost_Generator_1)
+    model.Marginal_Cost_Generator_1 = Param(model.generator_type, mutable=True)
         
     # Parameters of the Energy balance                  
 #    model.Energy_Demand = Param(model.scenario, model.periods, initialize=Initialize_Demand)
     model.Energy_Demand = Param(model.scenario, model.periods, mutable=True) 
-    model.Lost_Load_Probability = Param(within=NonNegativeReals) # Lost load probability in %
+    model.Lost_Load_Probability = Param(within=NonNegativeReals, mutable=True) # Lost load probability in %
     model.Value_Of_Lost_Load = Param(within=NonNegativeReals) # Value of lost load in USD/W
     if Renewable_Penetration > 0:
         model.Renewable_Penetration =  Renewable_Penetration
