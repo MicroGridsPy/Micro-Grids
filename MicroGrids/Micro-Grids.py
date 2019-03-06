@@ -22,7 +22,7 @@ S = 1 # Plot scenario
 Plot_Date = '25/12/2016 00:00:00' # Day-Month-Year
 PlotTime = 5# Days of the plot
 plot = 'No Average' # 'No Average' or 'Average'
-LLP = [0,0.01, 0.05]
+LLP = [0.02]
 Diesel_Cost = list(np.arange(0.18, 1.38, 0.2))
  # define type of optimization problem
 model = AbstractModel()
@@ -91,7 +91,7 @@ for i in village:
                 foo += 1
 
 
-Data.to_excel('Results.xls')
+Data.to_excel('Results1.xls')
 
 
                 
