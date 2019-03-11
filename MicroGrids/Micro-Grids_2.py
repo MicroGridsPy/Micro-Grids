@@ -90,7 +90,7 @@ for i in village:
                 Data.loc[foo, 'Battery nominal capacity'] = instance.Battery_Nominal_Capacity.get_values()[None]
                 foo += 1
 
-Data.to_excel('Results2.xls')
+Data.to_excel('Results_lh_3.xls')
 
                
 from sklearn.utils import shuffle
@@ -99,7 +99,7 @@ Data2 = shuffle(Data, random_state=0)
 
 Data2.index = range(1,len(Data2)+1)
 
-Data2.to_excel('Optimization_Results2.xls')
+Data2.to_excel('Optimization_Results_lh.xls')
 
 
 
