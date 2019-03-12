@@ -39,7 +39,7 @@ def Model_Creation(model, Renewable_Penetration,Battery_Independency):
                                              within=NonNegativeReals) # Nominal capacity of the PV in W/unit
     model.Renewable_Inverter_Efficiency = Param(model.renewable_source) # Efficiency of the inverter in %
     model.Renewable_Invesment_Cost = Param(model.renewable_source,
-                                           within=NonNegativeReals) # Cost of solar panel in USD/W
+                                           within=NonNegativeReals, mutable=True) # Cost of solar panel in USD/W
     model.Renewable_Energy_Production = Param(model.scenario,model.renewable_source,
                                               model.periods, within=NonNegativeReals, mutable=True) # Energy produccion of a solar panel in W
     
@@ -49,11 +49,10 @@ def Model_Creation(model, Renewable_Penetration,Battery_Independency):
     model.Deep_of_Discharge = Param() # Deep of discharge of the battery (Deep_of_Discharge) in %
     model.Maximun_Battery_Charge_Time = Param(within=NonNegativeReals) # Minimun time of charge of the battery in hours
     model.Maximun_Battery_Discharge_Time = Param(within=NonNegativeReals) # Maximun time of discharge of the battery  in hours                     
-    model.Battery_Invesment_Cost = Param() # Cost of battery 
+    model.Battery_Invesment_Cost = Param(mutable=True) # Cost of battery 
     model.Battery_Electronic_Invesmente_Cost = Param(within=NonNegativeReals)
     model.Battery_Cycles = Param(within=NonNegativeReals)
-    model.Unitary_Battery_Reposition_Cost = Param(within=NonNegativeReals, 
-                                          initialize=Battery_Reposition_Cost)
+    model.Unitary_Battery_Reposition_Cost = Param(within=NonNegativeReals, mutable=True)
     model.Battery_Initial_SOC = Param(within=NonNegativeReals)
     if  Battery_Independency > 0:
         model.Battery_Independency = Battery_Independency
@@ -64,7 +63,7 @@ def Model_Creation(model, Renewable_Penetration,Battery_Independency):
     model.Low_Heating_Value = Param(model.generator_type) # Low heating value of the diesel in W/L
 #    model.Fuel_Cost = Param(model.generator_type, within=NonNegativeReals, mutable=True) 
     model.Generator_Invesment_Cost = Param(model.generator_type,
-                                           within=NonNegativeReals) # Cost of the diesel generator
+                                           within=NonNegativeReals, mutable=True) # Cost of the diesel generator
     model.Marginal_Cost_Generator_1 = Param(model.generator_type, mutable=True)
         
     # Parameters of the Energy balance                  

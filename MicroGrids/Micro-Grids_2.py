@@ -8,6 +8,9 @@ from Results import Plot_Energy_Total, Load_results1, Energy_Mix, Print_Results,
 from Model_Creation import Model_Creation
 from Model_Resolution import Model_Resolution
 from pyomo.opt import SolverFactory
+from pyDOE import lhs
+import itertools
+
 #21212
 # Type of problem formulation:
 formulation = 'LP'
@@ -22,9 +25,17 @@ S = 1 # Plot scenario
 Plot_Date = '25/12/2016 00:00:00' # Day-Month-Year
 PlotTime = 5# Days of the plot
 plot = 'No Average' # 'No Average' or 'Average'
-LLP = [0.03,0.04]
-Diesel_Cost = list(np.arange(0.18, 1.38, 0.2))
- # define type of optimization problem
+
+LLP = [0,0.05]
+Diesel_Cost = [0.18,1.18]
+Renewable_Invesment_Cost = [1.3,1.8]
+Generator_Invesment_Cost = [1.3,1.7]
+Battery_Invesment_Cost = [0.4,0.7]
+
+lh = lhs(5, samples=60)
+lst = list(itertools.product([0, 1], repeat=5))
+lh = np.concatenate((lh,np.array(lst)))
+
 model = AbstractModel()
 
 Model_Creation(model, Renewable_Penetration, Battery_Independency)
@@ -36,6 +47,9 @@ foo = 0
 Data = pd.DataFrame()
 Results = pd.DataFrame()
 Renewable_Nominal_Capacity = instance.Renewable_Nominal_Capacity.extract_values()[1]
+
+Nruns = lh.shape[0]
+
 
 for i in village:
        
@@ -55,40 +69,59 @@ for i in village:
                 
                 instance.Renewable_Energy_Production[s,1,t] = Renewable_Energy.iloc[t-1,s-1]        
         
-        for llp in LLP:
-            instance.Lost_Load_Probability = llp
+        for n in range(Nruns):
+            llp = LLP[0] +lh[n,0]*(LLP[-1]-LLP[0])  
+            diesel_cost = Diesel_Cost[0] +lh[n,0]*(Diesel_Cost[-1]-Diesel_Cost[0])
+            renewable_invesment_cost = Renewable_Invesment_Cost[0] +lh[n,0]*(Renewable_Invesment_Cost[-1]
+                                                                    -Renewable_Invesment_Cost[0]) 
+            generator_invesment_cost = Generator_Invesment_Cost[0] +lh[n,0]*(Generator_Invesment_Cost[-1]
+                                                                    -Generator_Invesment_Cost[0]) 
+            battery_invesment_cost = Battery_Invesment_Cost[0] +lh[n,0]*(Battery_Invesment_Cost[-1]
+                                                                -Battery_Invesment_Cost[0])  
             
+            instance.Lost_Load_Probability = round(llp,4)
+                            
+            Low_Heating_Value = instance.Low_Heating_Value.extract_values()[1]
+            Generator_Efficiency = instance.Generator_Efficiency.extract_values()[1]
+            diesel_cost = round(diesel_cost,3)
+            instance.Marginal_Cost_Generator_1[1] = diesel_cost/(Low_Heating_Value*Generator_Efficiency)
             
-           
+            instance.Renewable_Invesment_Cost[1] = round(renewable_invesment_cost,3)
             
-            for diesel_cost in Diesel_Cost:
-                
-                Low_Heating_Value = instance.Low_Heating_Value.extract_values()[1]
-                Generator_Efficiency = instance.Generator_Efficiency.extract_values()[1]
-                
-                instance.Marginal_Cost_Generator_1[1] = diesel_cost/(Low_Heating_Value*Generator_Efficiency)
-
-                
-                opt = SolverFactory('cplex') # Solver use during the optimization    
-                results = opt.solve(instance, tee=True) # Solving a model instance 
-                instance.solutions.load_from(results)  # Loading solution into instance
-                print(Village)
-                print('Solar time series ' +str(PV))
-                print('Lost load probability ' + str(llp*100) + ' %')
-                print('Diesel cost ' + str(diesel_cost) + ' USD/l')    
-                
-                
-                Renewable_Units = instance.Renewable_Units.get_values()[1]
-                
-                Data.loc[foo, 'NPC'] = instance.ObjectiveFuntion.expr()
-                Data.loc[foo, 'Households'] = i
-                Data.loc[foo, 'PV output'] = PV
-                Data.loc[foo, 'LLP'] = llp
-                Data.loc[foo, 'Diesel Cost'] = diesel_cost
-                Data.loc[foo, 'PV nominal capacity'] = Renewable_Nominal_Capacity*Renewable_Units
-                Data.loc[foo, 'Genset nominal capacity']  =  instance.Generator_Nominal_Capacity.get_values()[1]
-                Data.loc[foo, 'Battery nominal capacity'] = instance.Battery_Nominal_Capacity.get_values()[None]
-                foo += 1
+            instance.Generator_Invesment_Cost[1] = round(generator_invesment_cost,3)
+            
+            battery_invesment_cost = round(battery_invesment_cost,3)
+            instance.Battery_Invesment_Cost = battery_invesment_cost
+            
+            Battery_Electronic_Invesmente_Cost = instance.Battery_Electronic_Invesmente_Cost()
+            Battery_Cycles = instance.Battery_Cycles()
+            Deep_of_Discharge = instance.Deep_of_Discharge()
+            unitary_battery_cost = battery_invesment_cost - Battery_Electronic_Invesmente_Cost
+            Unitary_Battery_Reposition_Cost = unitary_battery_cost/(Battery_Cycles*2*(1-Deep_of_Discharge))
+            instance.Unitary_Battery_Reposition_Cost = Unitary_Battery_Reposition_Cost 
+            
+            opt = SolverFactory('cplex') # Solver use during the optimization    
+            results = opt.solve(instance, tee=True) # Solving a model instance 
+            instance.solutions.load_from(results)  # Loading solution into instance
+            print(Village)
+            print('Solar time series ' +str(PV))
+                    
+                    
+            Renewable_Units = instance.Renewable_Units.get_values()[1]
+                    
+            Data.loc[foo, 'NPC'] = instance.ObjectiveFuntion.expr()
+            Data.loc[foo, 'Households'] = i
+            Data.loc[foo, 'PV output'] = PV
+            Data.loc[foo, 'LLP'] = round(llp,4)
+            Data.loc[foo, 'Diesel Cost'] = diesel_cost
+            Data.loc[foo, 'Renewable invesment cost'] = round(renewable_invesment_cost,3) 
+            Data.loc[foo, 'Genererator invesment cost'] = round(generator_invesment_cost,3)
+            Data.loc[foo, 'Battery invesment cost'] = battery_invesment_cost
+            Data.loc[foo, 'Battery operation cost'] = Unitary_Battery_Reposition_Cost
+            Data.loc[foo, 'PV nominal capacity'] = Renewable_Nominal_Capacity*Renewable_Units
+            Data.loc[foo, 'Genset nominal capacity']  =  instance.Generator_Nominal_Capacity.get_values()[1]
+            Data.loc[foo, 'Battery nominal capacity'] = instance.Battery_Nominal_Capacity.get_values()[None]
+            foo += 1
 
 Data.to_excel('Results_lh_3.xls')
 
