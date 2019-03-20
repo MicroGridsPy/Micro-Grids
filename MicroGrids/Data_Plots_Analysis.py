@@ -24,7 +24,7 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.model_selection import cross_validate
 import matplotlib.gridspec as gridspec
 
-i = 128
+i = 80
 sheetname = 'village_' + str(i)
 Energy_Demand = pd.read_excel('Example/Demand.xls',sheetname=sheetname)
 
@@ -83,31 +83,15 @@ axs[1].text(1.6,- 0.2, 'B)', transform=axs[0].transAxes,
 axs[1].legend(bbox_to_anchor=(0.8,-0.05),
     frameon=False, ncol=2,fontsize = 15)
 
-
-
-
-
-
-#
-#Village = range(80,210,12)
-#
-#Demand_Village = pd.DataFrame()
-#for i in Village:
-#    sheetname = 'village_' + str(i)
-#    Energy_Demand = pd.read_excel('Example/Demand.xls',sheetname=sheetname)
-#    Energy_Demand['hour'] = Daily
-#    Energy_Demand = Energy_Demand.groupby(['hour']).mean()/1000  
-#    
-#    
-#    Demand_Village[sheetname] = Energy_Demand['Average']
-#        
-#ax = Demand_Village.plot()    
-#ax.set_ylabel('Power (kW)')
-#ax.set_xlabel('Hours')
-#plt.legend(bbox_to_anchor=(1, 1.05))
-#pylab.xlim([1,24])
-
-
+solar = range(10)
+NPS = pd.Series()
+for s in solar:
+    PV_Power =  pd.read_excel('Example/Renewable_Energy.xls', sheetname = s)
+    NPS.loc[s] = PV_Power[1].sum()/365
+    
+Solar_Espino = (NPS[0] + NPS[1] + NPS[2] + NPS[3])/4
+Solar_Remanso = (NPS[4] + NPS[5] + NPS[6])/3
+Solar_Sena = (NPS[7] + NPS[8] + NPS[9])/3 
 
 
 

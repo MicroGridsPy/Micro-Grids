@@ -20,21 +20,21 @@ formulation = 'LP'
 Renewable_Penetration = 0 # a number from 0 to 1.
 Battery_Independency = 0  # number of days of battery independency
 village = range(80,210,12)
-Solar = range(10)
+Solar = range(5,10)
 S = 1 # Plot scenario
 Plot_Date = '25/12/2016 00:00:00' # Day-Month-Year
 PlotTime = 5# Days of the plot
 plot = 'No Average' # 'No Average' or 'Average'
 
 LLP = [0,0.05]
-Diesel_Cost = [0.18,1.18]
+Diesel_Cost = [0.28,1.28]
 Renewable_Invesment_Cost = [1.3,1.8]
 Generator_Invesment_Cost = [1.3,1.7]
-Battery_Invesment_Cost = [0.4,0.7]
+Battery_Invesment_Cost = [0.4,0.6]
 
-lh = lhs(5, samples=60)
-lst = list(itertools.product([0, 1], repeat=5))
-lh = np.concatenate((lh,np.array(lst)))
+
+#lst = list(itertools.product([0, 1], repeat=5))
+#lh = np.concatenate((lh,np.array(lst)))
 
 model = AbstractModel()
 
@@ -48,11 +48,11 @@ Data = pd.DataFrame()
 Results = pd.DataFrame()
 Renewable_Nominal_Capacity = instance.Renewable_Nominal_Capacity.extract_values()[1]
 
-Nruns = lh.shape[0]
+Nruns = 10
 
 
 for i in village:
-       
+    
     Village = 'village_' + str(i)
     Energy_Demand = pd.read_excel('Example/Demand.xls',sheetname=Village)
     
@@ -62,6 +62,7 @@ for i in village:
     
     
     for PV in Solar:
+        lh = lhs(5, samples=Nruns)   
         Renewable_Energy = pd.read_excel('Example/Renewable_Energy.xls',sheetname=PV)        
         
         for s in range(1,Number_Scenarios+1):
@@ -71,12 +72,12 @@ for i in village:
         
         for n in range(Nruns):
             llp = LLP[0] +lh[n,0]*(LLP[-1]-LLP[0])  
-            diesel_cost = Diesel_Cost[0] +lh[n,0]*(Diesel_Cost[-1]-Diesel_Cost[0])
-            renewable_invesment_cost = Renewable_Invesment_Cost[0] +lh[n,0]*(Renewable_Invesment_Cost[-1]
+            diesel_cost = Diesel_Cost[0] +lh[n,1]*(Diesel_Cost[-1]-Diesel_Cost[0])
+            renewable_invesment_cost = Renewable_Invesment_Cost[0] +lh[n,2]*(Renewable_Invesment_Cost[-1]
                                                                     -Renewable_Invesment_Cost[0]) 
-            generator_invesment_cost = Generator_Invesment_Cost[0] +lh[n,0]*(Generator_Invesment_Cost[-1]
+            generator_invesment_cost = Generator_Invesment_Cost[0] +lh[n,3]*(Generator_Invesment_Cost[-1]
                                                                     -Generator_Invesment_Cost[0]) 
-            battery_invesment_cost = Battery_Invesment_Cost[0] +lh[n,0]*(Battery_Invesment_Cost[-1]
+            battery_invesment_cost = Battery_Invesment_Cost[0] +lh[n,4]*(Battery_Invesment_Cost[-1]
                                                                 -Battery_Invesment_Cost[0])  
             
             instance.Lost_Load_Probability = round(llp,4)
@@ -105,6 +106,7 @@ for i in village:
             instance.solutions.load_from(results)  # Loading solution into instance
             print(Village)
             print('Solar time series ' +str(PV))
+            print(n)
                     
                     
             Renewable_Units = instance.Renewable_Units.get_values()[1]
